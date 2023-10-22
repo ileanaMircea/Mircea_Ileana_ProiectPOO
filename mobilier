@@ -1,0 +1,67 @@
+#include <iostream>
+#include <cstring>
+
+class Masa {
+public:
+    std::string nume;
+    const int anFabricatie;
+    char* marca;
+    float greutate;
+    float pret;
+    static float TVA;
+
+    Masa(const char* nume, char* marca, float greutate) : anFabricatie(2023), greutate(greutate), pret(0) {
+        this->nume = nume;
+        this->marca = new char[strlen(marca) + 1];
+        strcpy(this->marca, marca);
+    }
+
+    Masa(const char* nume, char* marca, float greutate, float pret) : anFabricatie(2023), greutate(greutate), pret(pret) {
+        this->nume = nume;
+        this->marca = new char[strlen(marca) + 1];
+        strcpy(this->marca, marca);
+    }
+
+    Masa(const char* nume, char* marca, float greutate, float pret, float tva) : anFabricatie(2023), greutate(greutate), pret(pret) {
+        this->nume = nume;
+        this->marca = new char[strlen(marca) + 1];
+        strcpy(this->marca, marca);
+        TVA = tva;
+    }
+
+    ~Masa() {
+        if (this->marca != nullptr) {
+            delete[] this->marca;
+        }
+    }
+
+    static float CalculeazaPretCuTVA(float pretFaraTVA) {
+        return pretFaraTVA * (1 + TVA / 100);
+    }
+
+    void Afisare() {
+        std::cout << "Nume: " << this->nume << std::endl;
+        std::cout << "Marca: " << this->marca << std::endl;
+        std::cout << "Greutate: " << this->greutate << " kg" << std::endl;
+        std::cout << "An fabricatie: " << this->anFabricatie << std::endl;
+        std::cout << "Pret: " << this->pret << " lei" << std::endl;
+        std::cout << "TVA: " << TVA << "%" << std::endl;
+    }
+};
+
+float Masa::TVA = 19; 
+
+int main() {
+    Masa m1("Masa buna", "ahba", 3);
+    Masa m2("Masa de calitate", "xyz", 5, 200);
+    Masa m3("Masa lux", "abc", 6, 300, 24);
+
+    m1.Afisare();
+    m2.Afisare();
+    m3.Afisare();
+
+    float pretCuTVA = Masa::CalculeazaPretCuTVA(m1.pret);
+    std::cout << "Pretul cu TVA al primei mese: " << pretCuTVA << " lei" << std::endl;
+
+    return 0;
+}
