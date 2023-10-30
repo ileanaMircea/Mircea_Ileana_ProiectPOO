@@ -2,7 +2,7 @@
 #include <cstring>
 
 class Masa {
-public:
+private:
     std::string nume;
     const int anFabricatie;
     char* marca;
@@ -10,23 +10,23 @@ public:
     float pret;
     static float TVA;
 
-    Masa(const char* nume, char* marca, float greutate) : anFabricatie(2023), greutate(greutate), pret(0) {
+public:
+    Masa(const char* nume, const char* marca, float greutate) : anFabricatie(2023), greutate(greutate), pret(0) {
         this->nume = nume;
         this->marca = new char[strlen(marca) + 1];
         strcpy(this->marca, marca);
     }
 
-    Masa(const char* nume, char* marca, float greutate, float pret) : anFabricatie(2023), greutate(greutate), pret(pret) {
+    Masa(const char* nume, const char* marca, float greutate, float pret) : anFabricatie(2023), greutate(greutate), pret(pret) {
         this->nume = nume;
         this->marca = new char[strlen(marca) + 1];
         strcpy(this->marca, marca);
     }
 
-    Masa(const char* nume, char* marca, float greutate, float pret, float tva) : anFabricatie(2023), greutate(greutate), pret(pret) {
-        this->nume = nume;
-        this->marca = new char[strlen(marca) + 1];
-        strcpy(this->marca, marca);
-        TVA = tva;
+    Masa(const Masa& other) : anFabricatie(other.anFabricatie), greutate(other.greutate), pret(other.pret) {
+        this->nume = other.nume;
+        this->marca = new char[strlen(other.marca) + 1];
+        strcpy(this->marca, other.marca);
     }
 
     ~Masa() {
@@ -35,33 +35,108 @@ public:
         }
     }
 
+    std::string GetNume() const {
+        return nume;
+    }
+
+    void SetNume(const std::string& nume) {
+        this->nume = nume;
+    }
+
+    char* GetMarca() const {
+        return marca;
+    }
+
+    void SetMarca(const char* marca) {
+        if (this->marca != nullptr) {
+            delete[] this->marca;
+        }
+        this->marca = new char[strlen(marca) + 1];
+        strcpy(this->marca, marca);
+    }
+
+    float GetGreutate() const {
+        return greutate;
+    }
+
+    void SetGreutate(float greutate) {
+        this->greutate = greutate;
+    }
+
+    float GetPret() const {
+        return pret;
+    }
+
+    void SetPret(float pret) {
+        this->pret = pret;
+    }
+
+    static float GetTVA() {
+        return TVA;
+    }
+
+    static void SetTVA(float tva) {
+        TVA = tva;
+    }
+
     static float CalculeazaPretCuTVA(float pretFaraTVA) {
         return pretFaraTVA * (1 + TVA / 100);
     }
 
-    void Afisare() {
-        std::cout << "Nume: " << this->nume << std::endl;
-        std::cout << "Marca: " << this->marca << std::endl;
-        std::cout << "Greutate: " << this->greutate << " kg" << std::endl;
-        std::cout << "An fabricatie: " << this->anFabricatie << std::endl;
-        std::cout << "Pret: " << this->pret << " lei" << std::endl;
+    void Afisare() const {
+        std::cout << "Nume: " << nume << std::endl;
+        std::cout << "Marca: " << marca << std::endl;
+        std::cout << "Greutate: " << greutate << " kg" << std::endl;
+        std::cout << "An fabricatie: " << anFabricatie << std::endl;
+        std::cout << "Pret: " << pret << " lei" << std::endl;
         std::cout << "TVA: " << TVA << "%" << std::endl;
     }
+
+    Masa& operator=(const Masa& other) {
+        if (this == &other) {
+            return *this;
+        }
+        this->nume = other.nume;
+        this->greutate = other.greutate;
+        this->pret = other.pret;
+
+        if (this->marca != nullptr) {
+            delete[] this->marca;
+        }
+        this->marca = new char[strlen(other.marca) + 1];
+        strcpy(this->marca, other.marca);
+
+        return *this;
+    }
+
+    friend void ProcesareMasa(const Masa& masa);
+    friend void AltaProcesare(const Masa& masa);
 };
 
-float Masa::TVA = 19; 
+float Masa::TVA = 19;
+
+void ProcesareMasa(const Masa& masa) {
+    std::cout << "Procesare masa: " << masa.GetNume() << std::endl;
+}
+
+void AltaProcesare(const Masa& masa) {
+    std::cout << "Alta procesare masa: " << masa.GetNume() << std::endl;
+}
 
 int main() {
     Masa m1("Masa buna", "ahba", 3);
     Masa m2("Masa de calitate", "xyz", 5, 200);
-    Masa m3("Masa lux", "abc", 6, 300, 24);
+    Masa m3(m2);  
 
     m1.Afisare();
     m2.Afisare();
     m3.Afisare();
 
-    float pretCuTVA = Masa::CalculeazaPretCuTVA(m1.pret);
+    float pretCuTVA = Masa::CalculeazaPretCuTVA(m1.GetPret());
     std::cout << "Pretul cu TVA al primei mese: " << pretCuTVA << " lei" << std::endl;
+
+    ProcesareMasa(m1);
+    AltaProcesare(m2);
 
     return 0;
 }
