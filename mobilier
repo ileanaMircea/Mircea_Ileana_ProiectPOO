@@ -1,9 +1,10 @@
 #include <iostream>
-#include <cstring>
+#include<vector>
+using namespace std;
 
 class Masa {
 private:
-    std::string nume;
+    string nume;
     const int anFabricatie;
     char* marca;
     float greutate;
@@ -11,22 +12,30 @@ private:
     static float TVA;
 
 public:
-    Masa(const char* nume, const char* marca, float greutate) : anFabricatie(2023), greutate(greutate), pret(0) {
+    Masa(const char* nume, char* marca, float greutate) : anFabricatie(2023), greutate(greutate), pret(0) {
         this->nume = nume;
         this->marca = new char[strlen(marca) + 1];
-        strcpy(this->marca, marca);
+        strcpy_s(this->marca, strlen(marca) + 1, marca);
     }
 
-    Masa(const char* nume, const char* marca, float greutate, float pret) : anFabricatie(2023), greutate(greutate), pret(pret) {
+    Masa(const char* nume, char* marca, float greutate, float pret) : anFabricatie(2023), greutate(greutate), pret(pret) {
         this->nume = nume;
         this->marca = new char[strlen(marca) + 1];
-        strcpy(this->marca, marca);
+        strcpy_s(this->marca, strlen(marca) + 1, marca);
+    }
+
+    Masa() : anFabricatie(2000) {
+        this->nume = "Masa de firma";
+        this->marca = new char[strlen("mobilaBuna") + 1];
+        strcpy_s(this->marca, strlen("mobilaBuna") + 1, "mobilaBuna");
+        this->greutate = 20;
+        this->pret = 100;
     }
 
     Masa(const Masa& other) : anFabricatie(other.anFabricatie), greutate(other.greutate), pret(other.pret) {
         this->nume = other.nume;
         this->marca = new char[strlen(other.marca) + 1];
-        strcpy(this->marca, other.marca);
+        strcpy_s(this->marca, strlen(other.marca) + 1, other.marca);
     }
 
     ~Masa() {
@@ -35,11 +44,11 @@ public:
         }
     }
 
-    std::string GetNume() const {
+    string GetNume() const {
         return nume;
     }
 
-    void SetNume(const std::string& nume) {
+    void SetNume(const string& nume) {
         this->nume = nume;
     }
 
@@ -52,7 +61,7 @@ public:
             delete[] this->marca;
         }
         this->marca = new char[strlen(marca) + 1];
-        strcpy(this->marca, marca);
+        strcpy_s(this->marca,strlen(marca)+1, marca);
     }
 
     float GetGreutate() const {
@@ -84,59 +93,297 @@ public:
     }
 
     void Afisare() const {
-        std::cout << "Nume: " << nume << std::endl;
-        std::cout << "Marca: " << marca << std::endl;
-        std::cout << "Greutate: " << greutate << " kg" << std::endl;
-        std::cout << "An fabricatie: " << anFabricatie << std::endl;
-        std::cout << "Pret: " << pret << " lei" << std::endl;
-        std::cout << "TVA: " << TVA << "%" << std::endl;
-    }
-
-    Masa& operator=(const Masa& other) {
-        if (this == &other) {
-            return *this;
+        cout << "Nume: " << nume << endl;
+        cout << "Marca: " << marca << endl;
+        cout << "Greutate: " << greutate << " kg" <<endl;
+        cout << "An fabricatie: " << anFabricatie <<endl;
+        cout << "Pret: " << pret << " lei" <<endl;
+        cout << "TVA: " << TVA << "%" << endl;
+    } 
+    //supraincarcare operator =
+    Masa& operator=(const Masa& masa) {
+        if (this != &masa) {
+            this->nume = masa.nume;
+            this->greutate = masa.greutate;
+            if (this->marca != nullptr) {
+                delete[] this->marca;
+            }
+            this->marca = new char[strlen(masa.marca) + 1];
+            strcpy_s(this->marca, strlen(masa.marca) + 1, masa.marca);
+            this->pret = masa.pret;
         }
-        this->nume = other.nume;
-        this->greutate = other.greutate;
-        this->pret = other.pret;
-
-        if (this->marca != nullptr) {
-            delete[] this->marca;
-        }
-        this->marca = new char[strlen(other.marca) + 1];
-        strcpy(this->marca, other.marca);
-
         return *this;
     }
 
     friend void ProcesareMasa(const Masa& masa);
     friend void AltaProcesare(const Masa& masa);
 };
-
-float Masa::TVA = 19;
-
+float Masa::TVA = 0.19;
 void ProcesareMasa(const Masa& masa) {
-    std::cout << "Procesare masa: " << masa.GetNume() << std::endl;
+    cout << "Procesare masa: " << masa.GetNume() << endl;
 }
 
 void AltaProcesare(const Masa& masa) {
-    std::cout << "Alta procesare masa: " << masa.GetNume() << std::endl;
+    cout << "Alta procesare masa: " << masa.GetPret() << endl;
+}
+
+class Scaun {
+private:
+    string nume;
+    int pret;
+    char* marca;
+    static float TVA;
+    const int anFabricare;
+    int nrPicioare;
+public:
+    Scaun() :anFabricare(2018) {
+        this->nume = "Scaun cu 3 picioare";
+        this->pret = 55;
+        this->marca = new char[strlen("Ikea") + 1];
+        strcpy_s(this->marca, strlen("Ikea") + 1, "Ikea");
+        this->nrPicioare = 3;
+    }
+
+    Scaun(string nume, int pret, char* marca, int nrPicioare) :anFabricare(2018) {
+        this->nume = nume;
+        this->pret = pret;
+        this->marca = new char[strlen(marca) + 1];
+        strcpy_s(this->marca, strlen(marca) + 1, marca);
+        this->nrPicioare = nrPicioare;
+    }
+
+    Scaun(string nume, int pret, char* marca, int nrPicioare, const int anFabricare) :anFabricare(anFabricare) {
+        this->nume = nume;
+        this->pret = pret;
+        this->marca = new char[strlen(marca) + 1];
+        strcpy_s(this->marca, strlen(marca) + 1, marca);
+        this->nrPicioare = nrPicioare;
+    }
+
+    //constructor de copiere
+    Scaun(const Scaun& scaun) :anFabricare(scaun.anFabricare) {
+        this->nume = scaun.nume;
+        this->pret = scaun.pret;
+        this->marca = new char[strlen(scaun.marca) + 1];
+        strcpy_s(this->marca, strlen(scaun.marca) + 1, scaun.marca);
+        this->nrPicioare = scaun.nrPicioare;
+    }
+
+    void afisare() {
+        cout << "Nume:" << this->nume << endl;
+        cout << "Pret:" << this->pret << endl;
+        cout << "Nr Picioare:" << this->nrPicioare << endl;
+        cout << "Marca:" << this->marca << endl << endl;
+    }
+    //supraincarcare operator =
+    Scaun& operator=(const Scaun& d) {
+        if (this != &d) {
+            this->nume = d.nume;
+            this->pret = d.pret;
+            this->nrPicioare = d.nrPicioare;
+            if (this->marca != NULL) {
+                delete[]this->marca;
+            }
+            this->marca = new char[strlen(d.marca) + 1];
+            strcpy_s(this->marca, strlen(d.marca) + 1, d.marca);
+        }
+        return *this;
+    }
+    //supraincarcare operator ++ pre increment
+    Scaun operator++() {
+        this->nrPicioare += 1;
+        return *this;
+    }
+    //supraincarcare operator ++ pre increment
+    Scaun operator++(int) {
+        Scaun temp = *this;
+        this->nrPicioare += 1;
+        return temp;
+    }
+
+};
+float Scaun::TVA = 0.19;
+
+class Dulap {
+private:
+    string firma;
+    int latime;
+    int lungime;
+    int adancime;
+    int* nrHainePeRaft;
+    int nrRafturi;
+    const int anFabricatie;
+    static float TVA;
+public:
+    Dulap() :anFabricatie(2019) {
+        this->firma = "Asaro";
+        this->latime = 30;
+        this->lungime = 20;
+        this->adancime = 10;
+        this->nrRafturi = 5;
+        this->nrHainePeRaft = new int[nrRafturi];
+        for (int i = 0; i < nrRafturi; i++) {
+            this->nrHainePeRaft[i] = 10 + i;
+        }
+    }
+
+    Dulap(string firma, int latime, int lungime, int adancime, int* nrHainePeRaft, int nrRafturi, const int an) :anFabricatie(an) {
+        this->firma = firma;
+        this->latime = latime;
+        this->lungime = lungime;
+        this->adancime = adancime;
+        this->nrRafturi = nrRafturi;
+        this->nrHainePeRaft = new int[nrRafturi];
+        for (int i = 0; i < nrRafturi; i++)
+            this->nrHainePeRaft[i] = nrHainePeRaft[i];
+    }
+
+    Dulap(string firma, int latime, int lungime, int adancime, int* nrHainePeRaft, int nrRafturi) :anFabricatie(2009) {
+        this->firma = firma;
+        this->latime = latime;
+        this->lungime = lungime;
+        this->adancime = adancime;
+        this->nrRafturi = nrRafturi;
+        this->nrHainePeRaft = new int[nrRafturi];
+        for (int i = 0; i < nrRafturi; i++)
+            this->nrHainePeRaft[i] = nrHainePeRaft[i];
+    }
+
+    //constructor de copiere
+    Dulap(const Dulap& d) :anFabricatie(d.anFabricatie) {
+        this->firma = d.firma;
+        this->latime = d.latime;
+        this->lungime = d.lungime;
+        this->adancime = d.adancime;
+        this->nrRafturi = d.nrRafturi;
+        this->nrHainePeRaft = new int[d.nrRafturi];
+        for (int i = 0; i < d.nrRafturi; i++)
+            this->nrHainePeRaft[i] = d.nrHainePeRaft[i];
+    }
+
+    ~Dulap() {
+        if (nrHainePeRaft != NULL) {
+            delete[] this->nrHainePeRaft;
+            this->nrHainePeRaft = NULL;
+        }
+    }
+
+    void afisare() {
+        cout << "Firma: " << this->firma << endl;
+        cout << "Latime: " << this->latime << endl;
+        cout << "Lungime: " << this->lungime << endl;
+        cout << "Adancime: " << this->adancime << endl;
+        cout << "Nr rafturi: " << this->nrRafturi << endl;
+        cout << "Nr haine pe raft:" << endl;
+        for (int i = 0; i < nrRafturi; i++) {
+            cout << this->nrHainePeRaft[i] << endl;
+        }
+        cout << "An fabricatie: " << this->anFabricatie << endl;
+        cout << "TVA: " << this->TVA << endl << endl;
+    }
+
+    void static schimbaTVA(float TVAnou) {
+        TVA = TVAnou;
+    }
+
+    //supraincarcare operator =
+    Dulap& operator=(const Dulap& d) {
+        if (this != &d) {
+            this->firma = d.firma;
+            this->latime = d.latime;
+            this->lungime = d.lungime;
+            this->adancime = d.adancime;
+            this->nrRafturi = d.nrRafturi;
+            if (this->nrHainePeRaft != NULL) {
+                delete[]this->nrHainePeRaft;
+            }
+            this->nrHainePeRaft = new int[nrRafturi];
+            for (int i = 0; i < nrRafturi; i++) {
+                this->nrHainePeRaft[i] = d.nrHainePeRaft[i];
+            }
+        }
+        return *this;
+    }
+    friend int volumDulap(Dulap& d);
+    friend void schimbaAdancime(Dulap& d);
+    friend bool operator>(Dulap d1, Dulap d2);
+
+    //supraincarcare operator <<
+    friend ostream& operator<<(ostream& consola, const Dulap& b) {
+        cout << "Firma: " << b.firma << endl;
+        cout << "Latime: " << b.latime << endl;
+        cout << "Lungime: " << b.lungime << endl;
+        cout << "Adancime: " << b.adancime << endl;
+        cout << "Nr rafturi: " << b.nrRafturi << endl;
+        for (int i = 0; i < b.nrRafturi; i++)
+            cout << b.nrHainePeRaft[i] << endl;
+        return consola;
+    }
+
+    //supraincarcare operator >>
+    friend istream& operator>>(istream& in, Dulap b) {
+        cout << "Firma: "; in >> b.firma;
+        cout << "Latime: "; in >> b.latime;
+        cout << "Lungime: "; in >> b.lungime;
+        cout << "Adancime: "; in >> b.adancime;
+        cout << "Nr rafturi: "; in >> b.nrRafturi;
+        if (b.nrHainePeRaft) {
+            delete[]b.nrHainePeRaft;
+        }
+        b.nrHainePeRaft = new int[b.nrRafturi];
+        for (int i = 0; i < b.nrRafturi; i++)
+            in >> b.nrHainePeRaft[i];
+        return in;
+    }
+
+};
+float Dulap::TVA = 0.19f;
+
+int volumDulap(Dulap& d) {
+    return d.latime * d.lungime * d.adancime;
+}
+
+void schimbaAdancime(Dulap& d) {
+    d.adancime = 15;
+}
+
+//supraincarcare operator >
+bool operator>(Dulap d1, Dulap d2) {
+    return d1.nrRafturi > d2.nrRafturi;
 }
 
 int main() {
-    Masa m1("Masa buna", "ahba", 3);
-    Masa m2("Masa de calitate", "xyz", 5, 200);
+    Masa m1;
+    Masa m2;
     Masa m3(m2);  
-
-    m1.Afisare();
     m2.Afisare();
     m3.Afisare();
 
     float pretCuTVA = Masa::CalculeazaPretCuTVA(m1.GetPret());
-    std::cout << "Pretul cu TVA al primei mese: " << pretCuTVA << " lei" << std::endl;
+    cout << "Pretul cu TVA al primei mese: " << pretCuTVA << " lei" << endl;
 
     ProcesareMasa(m1);
-    AltaProcesare(m2);
+    AltaProcesare(m2); 
+
+    Dulap d1;
+    d1.afisare();
+    int* nrHainePeRaft = new int[4];
+    for (int i = 0; i < 4; i++)
+        nrHainePeRaft[i] = (i * 2) + 1;
+    Dulap d2("Ikea", 20, 20, 20, nrHainePeRaft, 4, 1990);
+    cout << endl << "Volumul dulapului d2 este: " << volumDulap(d2) << endl;
+    d2.afisare();
+    d1.schimbaTVA(0.18);
+    d1.afisare();
+    Dulap d3 = d1;
+    cout << d3;
+
+    vector<Scaun>v;
+    for (int i = 0; i < numberOfObjects; ++i) {
+        Scaun s1;
+        s1.afisare();  
+        v.push_back(s1);
+    }
 
     return 0;
 }
