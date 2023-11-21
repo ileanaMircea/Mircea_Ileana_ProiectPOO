@@ -1,5 +1,6 @@
 #include <iostream>
 #include<vector>
+#include<string>
 using namespace std;
 
 class Masa {
@@ -115,17 +116,33 @@ public:
         return *this;
     }
 
+    //supraincarcare operator >>
+    friend istream& operator>>(istream& in, Masa& m1) {
+        cout << "Nume:"; in >> m1.nume;
+        char tempmarca[30];
+        cout << "Marca: "; in >> tempmarca;
+        if (m1.marca)
+            delete[]m1.marca;
+        m1.marca = new char[strlen(tempmarca) + 1];
+        strcpy_s(m1.marca, strlen(tempmarca) + 1, tempmarca);
+        cout << "Greutate: "; in >> m1.greutate;
+        cout << "Pret: "; in >> m1.pret;
+        return in;
+    }
+
+    //supraincarcare operator <<
+    friend ostream& operator<<(ostream& consola, Masa& m1) {
+        cout << "Nume:" << m1.nume;
+        cout << "Marca: " << m1.marca;
+        cout << "Greutate: "<< m1.greutate;
+        cout << "Pret: "<<m1.pret;
+        return consola;
+    }
+
     friend void ProcesareMasa(const Masa& masa);
     friend void AltaProcesare(const Masa& masa);
 };
 float Masa::TVA = 0.19;
-void ProcesareMasa(const Masa& masa) {
-    cout << "Procesare masa: " << masa.GetNume() << endl;
-}
-
-void AltaProcesare(const Masa& masa) {
-    cout << "Alta procesare masa: " << masa.GetPret() << endl;
-}
 
 class Scaun {
 private:
@@ -169,6 +186,16 @@ public:
         this->nrPicioare = scaun.nrPicioare;
     }
 
+    //getter nume
+    string getNume() {
+        return this->nume;
+    }
+
+    //setter nume
+    void setNume(string s) {
+        this->nume = s;
+   }
+
     void afisare() {
         cout << "Nume:" << this->nume << endl;
         cout << "Pret:" << this->pret << endl;
@@ -194,11 +221,31 @@ public:
         this->nrPicioare += 1;
         return *this;
     }
-    //supraincarcare operator ++ pre increment
+    //supraincarcare operator ++ post increment
     Scaun operator++(int) {
         Scaun temp = *this;
         this->nrPicioare += 1;
         return temp;
+    }
+
+    //supraincarcare >>
+    friend istream& operator>>(istream& in, Scaun& s) {
+        cout << "Nume: "; cin >> s.nume;
+        cout << "Pret: "; cin >> s.pret;
+        cout << "Nr picioare: "; cin >> s.nrPicioare;
+        char tempMarca[30];
+        cout << "Marca: "; cin >> tempMarca;
+        if (s.marca != nullptr) {
+            delete[]s.marca;
+        }
+        s.marca = new char[strlen(tempMarca) + 1];
+        strcpy_s(s.marca, strlen(tempMarca)+1,tempMarca);
+        return in;
+    }
+    //supraincarcare <<
+    friend ostream& operator<<(ostream& consola, const Scaun& s) {
+        cout << "Nume: " << s.nume << endl << "Pret: " << s.pret << endl << "Nr picioare: " << s.nrPicioare << endl << "Marca: " << s.marca << endl;
+        return consola;
     }
 
 };
@@ -339,12 +386,50 @@ public:
 };
 float Dulap::TVA = 0.19f;
 
+class Mobilier {
+private:
+    Scaun scaun;
+    string proprietar;
+    int anFabricatie;
+    string firma;
+public:
+    string getProprietar(){
+        return proprietar;
+    }
+    void setProprietar(string& proprietarNou) {
+        proprietar = proprietarNou;
+    }
+    int getAnFabricatie() {
+        return anFabricatie;
+    }
+    void setAnFabricatie(int& anNou) {
+        anFabricatie = anNou;
+    }
+    string getFirma() {
+        return firma;
+    }
+    void setProprietar(string& firmaNoua) {
+        firma = firmaNoua;
+    }
+    Scaun getScaun() {
+        return scaun;
+    }
+    void setProprietar(Scaun& scaunNou) {
+        scaun = scaunNou;
+    }
+};
+
 int volumDulap(Dulap& d) {
     return d.latime * d.lungime * d.adancime;
 }
-
+void ProcesareMasa(const Masa& masa) {
+    cout << "Procesare masa: " << masa.GetNume() << endl;
+}
 void schimbaAdancime(Dulap& d) {
     d.adancime = 15;
+}
+void AltaProcesare(const Masa& masa) {
+    cout << "Alta procesare masa: " << masa.GetPret() << endl;
 }
 
 //supraincarcare operator >
@@ -352,10 +437,12 @@ bool operator>(Dulap d1, Dulap d2) {
     return d1.nrRafturi > d2.nrRafturi;
 }
 
+
+
 int main() {
     Masa m1;
     Masa m2;
-    Masa m3(m2);  
+    Masa m3(m2);
     m2.Afisare();
     m3.Afisare();
 
@@ -363,7 +450,7 @@ int main() {
     cout << "Pretul cu TVA al primei mese: " << pretCuTVA << " lei" << endl;
 
     ProcesareMasa(m1);
-    AltaProcesare(m2); 
+    AltaProcesare(m2);
 
     Dulap d1;
     d1.afisare();
@@ -378,12 +465,30 @@ int main() {
     Dulap d3 = d1;
     cout << d3;
 
-    vector<Scaun>v;
-    for (int i = 0; i < numberOfObjects; ++i) {
-        Scaun s1;
-        s1.afisare();  
-        v.push_back(s1);
-    }
+    vector<Scaun>vScaun;
+    int lungimeVectorScaun = 3;
+    vector<Dulap>vDulap;
+    int lungimeVectorDulap = 3;
+    vector<Masa>vMasa;
+    int lungimeVectorMasa = 3;
 
-    return 0;
+    vector<vector<Dulap>> matrice;
+
+    for (int i = 0; i < lungimeVectorScaun; i++) {
+        cin >> vScaun[i];
+        cout << vScaun[i] << " ";
+    }
+    for (int i = 0; i < lungimeVectorDulap; i++) {
+        cin >> vDulap[i];
+        cout << vDulap[i] << " ";
+    }
+    for (int i = 0; i < lungimeVectorMasa; i++) {
+        cin >> vMasa[i];
+        cout << vMasa[i] << " ";
+    }
+    for (int i = 0; i < lungimeVectorDulap; i++) 
+        for(int j=0;j<=lungimeVectorDulap;j++){
+            cin >> matrice[i][j];
+        cout << matrice[i][j] << " ";
+    }
 }
